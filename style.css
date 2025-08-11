@@ -1,0 +1,27 @@
+/* Reset the box-model */
+div {
+  box-sizing: border-box;
+}
+/* Pass down the box-sizing property */
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.square {
+    background-color: rgb(224, 224, 224);
+    border: white solid 1px;
+}
