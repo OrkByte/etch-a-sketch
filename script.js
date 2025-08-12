@@ -29,7 +29,18 @@ function startSketch(showPrompt) {
 }
 
 function colorSquare(square) {
-  square.style.backgroundColor = "red";
+  square.style.backgroundColor = getRandomColor();
+}
+
+function getRandomColor() {
+  const red = getRandomNumber();
+  const green = getRandomNumber();
+  const blue = getRandomNumber();
+  return `rgb(${red}, ${green}, ${blue})`;
+}
+
+function getRandomNumber() {
+  return Math.floor(Math.random() * 256);
 }
 
 function removeSquares() {
