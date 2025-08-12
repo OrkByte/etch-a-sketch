@@ -4,6 +4,7 @@ const SHOW_PROMPT_AT_START = false;
 const SHOW_PROMPT_ON_BTN_CLICK = true;
 const mouseEnterHandlerMap = new Map();
 const squareArr = [];
+let initialOpacity = 1;
 let numberOfSquaresPerSide = 16;
 
 const container = document.querySelector(".container");
@@ -29,14 +30,24 @@ function startSketch(showPrompt) {
 }
 
 function colorSquare(square) {
-  square.style.backgroundColor = getRandomColor();
+  square.style.backgroundColor = getRandomColor(square);
 }
 
-function getRandomColor() {
+function getRandomColor(square) {
+  const opacity = getAndIncreaseOpacity(square);
   const red = getRandomNumber();
   const green = getRandomNumber();
   const blue = getRandomNumber();
-  return `rgb(${red}, ${green}, ${blue})`;
+  return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+}
+
+function getAndIncreaseOpacity(square) {
+  const squareData = mouseEnterHandlerMap.get(square);
+  const handler = squareData[0];
+  const opacity = squareData[1];
+  mouseEnterHandlerMap.set(square, [handler, opacity - 0.1]);
+
+  return opacity;
 }
 
 function getRandomNumber() {
@@ -45,7 +56,7 @@ function getRandomNumber() {
 
 function removeSquares() {
   for (const square of squareArr) {
-    const mouseEnterHandler = mouseEnterHandlerMap.get(square);
+    const mouseEnterHandler = mouseEnterHandlerMap.get(square)[0];
     square.removeEventListener("mouseenter", mouseEnterHandler);
     square.remove();
   }
@@ -60,7 +71,8 @@ function drawSquares() {
     square.style.width = `${squareWidth}px`;
     square.style.height = `${squareWidth}px`;
     const mouseEnterHandler = () => colorSquare(square);
-    mouseEnterHandlerMap.set(square, mouseEnterHandler); // store in a Map to have access when eventListener is removed
+    const squareData = [mouseEnterHandler, initialOpacity];
+    mouseEnterHandlerMap.set(square, squareData); // store in a Map to have access when eventListener is removed
     square.addEventListener("mouseenter", mouseEnterHandler);
     squareArr.push(square);
     container.appendChild(square);
