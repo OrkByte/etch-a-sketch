@@ -34,7 +34,7 @@ function removeSquares() {
 
 function drawSquares() {
   let squareWidth = CONTAINER_WIDTH / numberOfSquaresPerSide;
-  let INITIAL_OPACITY = 1;
+  const INITIAL_OPACITY = 1;
   
   for (let i = 1; i <= numberOfSquaresPerSide**2; i++) {
     const square = document.createElement("div");
