@@ -1,5 +1,4 @@
-const mouseEnterHandlerMap = new Map();
-const squareArr = [];
+const squares = new Map();
 let numberOfSquaresPerSide = 16;
 
 const container = document.querySelector(".container");
@@ -25,9 +24,9 @@ function showPrompt() {
 }
 
 function removeSquares() {
-  for (const square of squareArr) {
-    const mouseEnterHandler = mouseEnterHandlerMap.get(square)[0]; // reference the same eventListener / handler as during creation
-    square.removeEventListener("mouseenter", mouseEnterHandler);
+  for (const square of squares.keys()) {
+    const handlerFn = squares.get(square)[0]; // reference the same handler function as during creation
+    square.removeEventListener("mouseenter", handlerFn);
     square.remove();
   }
 }
@@ -41,11 +40,10 @@ function drawSquares() {
     square.classList.add("square");
     square.style.width = `${squareWidth}px`;
     square.style.height = `${squareWidth}px`;
-    const mouseEnterHandler = () => colorSquare(square);
-    const squareData = [mouseEnterHandler, INITIAL_OPACITY];
-    mouseEnterHandlerMap.set(square, squareData); // store in a Map to have access when eventListener is removed
-    square.addEventListener("mouseenter", mouseEnterHandler);
-    squareArr.push(square);
+    const handlerFn = () => colorSquare(square);
+    const squareData = [handlerFn, INITIAL_OPACITY];
+    square.addEventListener("mouseenter", handlerFn);
+    squares.set(square, squareData); // store in a Map to have access when eventListener is removed
     container.appendChild(square);
   }
 }
@@ -59,10 +57,10 @@ function colorSquare(square) {
 }
 
 function getAndIncreaseOpacity(square) {
-  const squareData = mouseEnterHandlerMap.get(square);
+  const squareData = squares.get(square);
   const handler = squareData[0];
   const opacity = squareData[1];
-  mouseEnterHandlerMap.set(square, [handler, opacity - 0.1]);
+  squares.set(square, [handler, opacity - 0.1]);
   
   return opacity;
 }
