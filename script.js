@@ -1,62 +1,32 @@
-const CONTAINER_WIDTH = 800;
-const MAX_NUM_OF_SQUARES = 100;
-const SHOW_PROMPT_AT_START = false;
-const SHOW_PROMPT_ON_BTN_CLICK = true;
 const mouseEnterHandlerMap = new Map();
 const squareArr = [];
-let initialOpacity = 1;
 let numberOfSquaresPerSide = 16;
 
 const container = document.querySelector(".container");
+const CONTAINER_WIDTH = 800;
 container.style.width = `${CONTAINER_WIDTH}px`;
 
 const btnReset = document.querySelector("#btnReset");
-btnReset.textContent = "Reset";
-btnReset.addEventListener("click", () => startSketch(SHOW_PROMPT_ON_BTN_CLICK));
-
-function startSketch(showPrompt) {
-  if (showPrompt) {
-    let input = prompt("Enter numbers of squares per side:");
-
-    while (input === null || input.trim() === "" || input > MAX_NUM_OF_SQUARES) {
-      input = prompt("Must be smaller or equal 100:");
-    }
-
-    numberOfSquaresPerSide = input;
-  }
-
+btnReset.addEventListener("click", () => {
+  showPrompt();
   removeSquares()
   drawSquares();
-}
+});
 
-function colorSquare(square) {
-  square.style.backgroundColor = getRandomColor(square);
-}
+function showPrompt() {  
+  const MAX_NUM_OF_SQUARES = 100;
+  let input = prompt("Enter numbers of squares per side:");
 
-function getRandomColor(square) {
-  const opacity = getAndIncreaseOpacity(square);
-  const red = getRandomNumber();
-  const green = getRandomNumber();
-  const blue = getRandomNumber();
-  return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
-}
+  while (input === null || isNaN(input) || input < 1 || input.trim() === "" || input > MAX_NUM_OF_SQUARES) {
+    input = prompt(`Must be between 1 and ${MAX_NUM_OF_SQUARES}`);
+  }
 
-function getAndIncreaseOpacity(square) {
-  const squareData = mouseEnterHandlerMap.get(square);
-  const handler = squareData[0];
-  const opacity = squareData[1];
-  mouseEnterHandlerMap.set(square, [handler, opacity - 0.1]);
-
-  return opacity;
-}
-
-function getRandomNumber() {
-  return Math.floor(Math.random() * 256);
+  numberOfSquaresPerSide = input;
 }
 
 function removeSquares() {
   for (const square of squareArr) {
-    const mouseEnterHandler = mouseEnterHandlerMap.get(square)[0];
+    const mouseEnterHandler = mouseEnterHandlerMap.get(square)[0]; // reference the same eventListener / handler as during creation
     square.removeEventListener("mouseenter", mouseEnterHandler);
     square.remove();
   }
@@ -64,6 +34,7 @@ function removeSquares() {
 
 function drawSquares() {
   let squareWidth = CONTAINER_WIDTH / numberOfSquaresPerSide;
+  let INITIAL_OPACITY = 1;
   
   for (let i = 1; i <= numberOfSquaresPerSide**2; i++) {
     const square = document.createElement("div");
@@ -71,7 +42,7 @@ function drawSquares() {
     square.style.width = `${squareWidth}px`;
     square.style.height = `${squareWidth}px`;
     const mouseEnterHandler = () => colorSquare(square);
-    const squareData = [mouseEnterHandler, initialOpacity];
+    const squareData = [mouseEnterHandler, INITIAL_OPACITY];
     mouseEnterHandlerMap.set(square, squareData); // store in a Map to have access when eventListener is removed
     square.addEventListener("mouseenter", mouseEnterHandler);
     squareArr.push(square);
@@ -79,5 +50,25 @@ function drawSquares() {
   }
 }
 
-startSketch(SHOW_PROMPT_AT_START);
+function colorSquare(square) {
+  const alpha = getAndIncreaseOpacity(square);
+  const red = getRandomNumber();
+  const green = getRandomNumber();
+  const blue = getRandomNumber();
+  square.style.backgroundColor =`rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
 
+function getAndIncreaseOpacity(square) {
+  const squareData = mouseEnterHandlerMap.get(square);
+  const handler = squareData[0];
+  const opacity = squareData[1];
+  mouseEnterHandlerMap.set(square, [handler, opacity - 0.1]);
+  
+  return opacity;
+}
+
+function getRandomNumber() {
+  return Math.floor(Math.random() * 256);
+}
+
+drawSquares();
